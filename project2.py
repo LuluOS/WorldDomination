@@ -1,23 +1,25 @@
 from PIL import Image
 
-def GroupPixel(im, xstart, ystart):
+#""" GroupPixel is a function that pick a group of 8x8 pixel and return the average   """
+def GroupPixel(im, xstart, ystart, px):
     aveap = 0
-    for y in range (ystart, ystart+8, 1):
-        for x in range (xstart, xstart+8, 1):
-            a, b = im.getpixel((x,y))
-            #print (a, b)
+    for y in range (ystart, ystart+px, 1):
+        for x in range (xstart, xstart+px, 1):
+            a = im.getpixel((x,y))
+            print ("A: %d" %a)
             aveap = aveap + a
     return (aveap / 100)
 
-im = Image.open('project2.png').convert('LA')
+im = Image.open('figure2.png').convert('L')
 #print(im.format, im.size, im.mode)
 #im.show()
 
-for j in range(0, im.size[1], 8):
-    for i in range (0, im.size[0], 8):
-        p = GroupPixel(im, i, j)
+size = 8
+for j in range(0, im.size[1], size):
+    for i in range (0, im.size[0], size):
+        p = GroupPixel(im, i, j, size)
         #print("x = %d y = %d" %(i,j))
         print ("P = %.2f" %(p))
-        scale = p / 25.5
+        scale = p / 25.5 #""" our scale to change the group of the pixel into one char """
         print ("Scale = %.2f" %(scale))
         print ("ROUND = %d" %(round(scale)))
