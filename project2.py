@@ -87,7 +87,8 @@ newImage = Image.new(img.mode, img.size, "white") #""" creating a new image """
 size = 8 #""" size of group of pixel """
 
 draw = ImageDraw.Draw(newImage) #""" allowing a draw in the new image """
-font = ImageFont.truetype("Aller_Rg.ttf",8) #""" defining the font and its size (size to a pixel 8) """
+fontSize = 10
+font = ImageFont.truetype("Aller_Rg.ttf",fontSize) #""" defining the font and its size (size to a pixel 8) """
 
 greyscale=['@', '%', '#', '$', '&', '|' ,';', ':', ',', '.', ' '] #""" our chars darker to lighter """
 
@@ -103,5 +104,7 @@ for j in range(0, img.size[1], size):
         scale = round(scale)
         draw.text((i,j),greyscale[scale], font=font, fill=(a,b,c))
 
-newImage.show() #""" showing the new image """
 newImage.save(name + 'Char.png') #""" save the new image """
+newImage.show() #""" showing the new image """
+
+exit()
