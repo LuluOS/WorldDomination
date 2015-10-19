@@ -1,4 +1,7 @@
 from PIL import Image, ImageFont, ImageDraw
+import easygui
+import time, sys
+
 
 #""" Quicksort """
 #""" http://hetland.org/coding/python/quicksort.html """
@@ -68,15 +71,24 @@ def FuncColor(im, xstart, ystart, px):
     quicksort(blue,0,63)
     return (red[31],green[31],blue[31])
 
+#""" Function that manipulates the progress bar """
+def ProgressBar(progress):
+    barLength = 10 # Modify this to change the length of the progress bar
+    status = ""
+    block = int(round(barLength*progress))
+    text = "\rPercent: [{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    sys.stdout.write(text)
+    sys.stdout.flush()
+
 #""" OpenImage is a function open PNG and return the image """
 def OpenImage(name):
-    im = Image.open(name + '.png').convert('RGB') #""" converting to RGB """
-    imbnw = Image.open(name + '.png').convert('L')  #""" converting to B&W """
+    im = Image.open(name).convert('RGB') #""" converting to RGB """
+    imbnw = Image.open(name).convert('L')  #""" converting to B&W """
     #imbnw.save(name + 'BnW.png') #""" save as  """
     return im, imbnw
 
 #""" Main """
-name = input("Name of the image: ") #""" ask to the user the name of the image """
+name = easygui.fileopenbox() #""" ask to the user the name of the image """
 img, imbnw = OpenImage(name)
 
 #print(im.format, im.size, im.mode)
@@ -92,7 +104,18 @@ font = ImageFont.truetype("Aller_Rg.ttf",fontSize) #""" defining the font and it
 
 greyscale=['@', '%', '#', '$', '&', '|' ,';', ':', ',', '.', ' '] #""" our chars darker to lighter """
 
+count = 0
+loop = round(img.size[1]/8)
+
+# """ Y-axes incremented by 8 """
 for j in range(0, img.size[1], size):
+    if (j % loop == 0):
+        #print ("j = %d" %(j))
+        count = count + 1
+        #print("count = %d" %(count*12.5))
+        ProgressBar(count/8)
+
+    # """ X-axes incremented by 8 """
     for i in range (0, img.size[0], size):
         a,b,c = FuncColor(img, i, j, size)
         p = GroupPixel(imbnw, i, j, size)
