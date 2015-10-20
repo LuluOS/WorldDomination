@@ -1,5 +1,5 @@
 from PIL import Image, ImageFont, ImageDraw
-import easygui, sys, math
+import easygui, sys
 
 
 #""" Quicksort """
@@ -59,25 +59,30 @@ def FuncColor(im, xstart, ystart, px):
     red = []
     green = []
     blue = []
-    for y in range (ystart, ystart+px, 1):
-        for x in range (xstart, xstart+px, 1):
+    for y in range (ystart, ystart+px):
+        for x in range (xstart, xstart+px):
             r,g,b = im.getpixel((x,y))
             red.append(r)
             green.append(g)
             blue.append(b)
-    quicksort(red,0,63)
-    quicksort(green,0,63)
-    quicksort(blue,0,63)
-    return (red[31],green[31],blue[31])
+    sizeArray = (px*px)-1
+    quicksort(red,0,sizeArray)
+    quicksort(green,0,sizeArray)
+    quicksort(blue,0,sizeArray)
+
+    media = round((px*px)/2)
+
+    return (red[media],green[media],blue[media])
 
 #""" Function that manipulates the progress bar """
 def ProgressBar(progress):
-    barLength = 100 # Modify this to change the length of the progress bar
+    barLength = 50 # Modify this to change the length of the progress bar
     status = ""
     block = int(round(barLength*progress))
     text = "\rPercent: [{0}] {1:.2f} % {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
+    #print(text, end="\r")
 
 #""" OpenImage is a function open PNG and return the image """
 def OpenImage(name):
@@ -115,32 +120,24 @@ def NewNameImage(name):
 #""" Main """
 
 name = easygui.fileopenbox() #""" ask to the user the name of the image """
-#print (name)
-#print (len(name))
 imageType = KnowFormatImage(name)
-#print(imageType)
 newName = NewNameImage(name)
-#print(newName)
 img, imbnw = OpenImage(name)
 
-#print(im.format, im.size, im.mode)
-#im.show()
-
 newImage = Image.new(img.mode, img.size, "white") #""" creating a new image """
-
-size = 8 #""" size of group of pixel """
-
 draw = ImageDraw.Draw(newImage) #""" allowing a draw in the new image """
-fontSize = 10
+
+size = int(input("Enter the size of the group of pixel: ")) #""" size of group of pixel """
+fontSize = round((10*size)/8) #""" font size is based on the size of the group of pixel """
 font = ImageFont.truetype("Aller_Rg.ttf",fontSize) #""" defining the font and its size (size to a pixel 8) """
 
-greyscale=['@', '%', '#', '$', '&', '|' ,';', ':', ',', '.', ' '] #""" our chars darker to lighter """
+#""" our chars darker to lighter """
+greyscale=['@', '%', '#', '$', '&', 'e' ,'+', '~', ',', '.', ' ']
 
 #""" Divide the big image in small squares that has the size 8x8 """
-lines = img.size[0]/8 #""" Number of lines in the image (X-Axes) """
-columns = img.size[1]/8  #""" Number of columns in the image (Y-Axes) """
+lines = img.size[0]/size #""" Number of lines in the image (X-Axes) """
+columns = img.size[1]/size  #""" Number of columns in the image (Y-Axes) """
 squares = (lines * columns)  #""" Amount of small squares with the size 8x8 """
-#print("line=%d\t colums=%d\t space= %d" %(lines, columns, squares))
 count = 0
 
 # """ Y-axes incremented by 8 """
@@ -149,11 +146,7 @@ for j in range(0, img.size[1], size):
     for i in range (0, img.size[0], size):
         a,b,c = FuncColor(img, i, j, size)
         p = GroupPixel(imbnw, i, j, size)
-        #print("x = %d y = %d" %(i,j))
-        #print ("P = %.2f" %(p))
         scale = p / 25.5 #""" our scale to change the group of the pixel into one char """
-        #print ("Scale = %.2f" %(scale))
-        #print ("ROUND = %d" %(round(scale)))
         scale = round(scale)
         draw.text((i,j),greyscale[scale], font=font, fill=(a,b,c))
 
@@ -166,7 +159,7 @@ for j in range(0, img.size[1], size):
         x = count/squares
         ProgressBar(x)
 
-newImage.save(newName + 'Char.' + imageType) #""" save the new image """
+newImage.save(newName + '_' + str(size) + '_' + 'Char.' + imageType) #""" save the new image """
 newImage.show() #""" showing the new image """
 
 exit()
