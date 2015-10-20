@@ -1,6 +1,5 @@
 from PIL import Image, ImageFont, ImageDraw
-import easygui
-import time, sys
+import easygui, sys, math
 
 
 #""" Quicksort """
@@ -73,10 +72,10 @@ def FuncColor(im, xstart, ystart, px):
 
 #""" Function that manipulates the progress bar """
 def ProgressBar(progress):
-    barLength = 10 # Modify this to change the length of the progress bar
+    barLength = 100 # Modify this to change the length of the progress bar
     status = ""
     block = int(round(barLength*progress))
-    text = "\rPercent: [{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    text = "\rPercent: [{0}] {1:.2f} % {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
 
@@ -87,8 +86,41 @@ def OpenImage(name):
     #imbnw.save(name + 'BnW.png') #""" save as  """
     return im, imbnw
 
+#""" KnowFormatImage is a function that discovers what is the image format """
+def KnowFormatImage(name):
+    imageFormat = ""
+    for i in range (len(name)-3,len(name)):
+        #print(name[i])
+        imageFormat += name[i]
+    return imageFormat
+
+#""" NewNameImage is a function that manipulates the role string and pick just the name of the image """
+def NewNameImage(name):
+    newName = ""
+    count = len(name)-1
+    flag = True
+
+    while (flag):
+        if (name[count] == '\\'):
+            flag = False
+        else:
+            count = count - 1
+
+    for i in range (count+1,len(name)-4):
+        newName += name[i]
+
+    return newName
+
+########################################################################################################################
 #""" Main """
+
 name = easygui.fileopenbox() #""" ask to the user the name of the image """
+#print (name)
+#print (len(name))
+imageType = KnowFormatImage(name)
+#print(imageType)
+newName = NewNameImage(name)
+#print(newName)
 img, imbnw = OpenImage(name)
 
 #print(im.format, im.size, im.mode)
@@ -104,17 +136,15 @@ font = ImageFont.truetype("Aller_Rg.ttf",fontSize) #""" defining the font and it
 
 greyscale=['@', '%', '#', '$', '&', '|' ,';', ':', ',', '.', ' '] #""" our chars darker to lighter """
 
+#""" Divide the big image in small squares that has the size 8x8 """
+lines = img.size[0]/8 #""" Number of lines in the image (X-Axes) """
+columns = img.size[1]/8  #""" Number of columns in the image (Y-Axes) """
+squares = (lines * columns)  #""" Amount of small squares with the size 8x8 """
+#print("line=%d\t colums=%d\t space= %d" %(lines, columns, squares))
 count = 0
-loop = round(img.size[1]/8)
 
 # """ Y-axes incremented by 8 """
 for j in range(0, img.size[1], size):
-    if (j % loop == 0):
-        #print ("j = %d" %(j))
-        count = count + 1
-        #print("count = %d" %(count*12.5))
-        ProgressBar(count/8)
-
     # """ X-axes incremented by 8 """
     for i in range (0, img.size[0], size):
         a,b,c = FuncColor(img, i, j, size)
@@ -127,7 +157,16 @@ for j in range(0, img.size[1], size):
         scale = round(scale)
         draw.text((i,j),greyscale[scale], font=font, fill=(a,b,c))
 
-newImage.save(name + 'Char.png') #""" save the new image """
+        #""" Manipulating the percentage of the progress bar
+        #    squares -> 100% = 1
+        #    count   -> x% = x
+        # So squares * x = count * 1
+        #    x =  count/squares """
+        count = count + 1
+        x = count/squares
+        ProgressBar(x)
+
+newImage.save(newName + 'Char.' + imageType) #""" save the new image """
 newImage.show() #""" showing the new image """
 
 exit()
