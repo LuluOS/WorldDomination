@@ -116,18 +116,56 @@ def NewNameImage(name):
 
     return newName
 
+def getDivisors(img):
+    x = img.size[0]
+    y = img.size[1]
+    print ("%d,%d" % (x,y))
+    xArray = []
+    yArray = []
+    matching = []
+    for i in range ( 1, round(x/8) ):
+        if x % i == 0:
+            xArray.append(i)
+    print (xArray)
+    for j in range ( 1, round(y/8) ):
+        if y % j == 0:
+            yArray.append(j)
+    print (yArray)
+    #if ( len(xArray) != 0 & len(yArray) != 0 ):
+
+    matching = list(set(xArray) & set(yArray))
+
+    print ("matching before quicksort: %s" % matching)
+    print (len(matching))
+    length = len(matching)
+    #matching = quicksort(matching,0,length - 1) #""" Quicksort returns NONE
+    print ("matching after quicksort: %s" % matching)
+
+    return matching
+
 ########################################################################################################################
 #""" Main """
+
+
 
 name = easygui.fileopenbox() #""" ask to the user the name of the image """
 imageType = KnowFormatImage(name)
 newName = NewNameImage(name)
 img, imbnw = OpenImage(name)
 
+msg = "Choose a density?"
+title = "Density/Font Sizing"
+matching = getDivisors(img)
+
+
+choices = [matching[0],matching[1],matching[2],matching[3],]
+choice = easygui.choicebox(msg, title, choices)
+size = int(choice)
+
 newImage = Image.new(img.mode, img.size, "white") #""" creating a new image """
 draw = ImageDraw.Draw(newImage) #""" allowing a draw in the new image """
 
-size = int(input("Enter the size of the group of pixel: ")) #""" size of group of pixel """
+#size = int(input("Enter the size of the group of pixel: ")) #""" size of group of pixel """
 fontSize = round((10*size)/8) #""" font size is based on the size of the group of pixel """
 font = ImageFont.truetype("Aller_Rg.ttf",fontSize) #""" defining the font and its size (size to a pixel 8) """
 
