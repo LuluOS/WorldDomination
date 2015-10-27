@@ -116,37 +116,31 @@ def NewNameImage(name):
 
     return newName
 
+#""" These function return a list of divisors """
 def getDivisors(img):
     x = img.size[0]
     y = img.size[1]
-    print ("%d,%d" % (x,y))
+
     xArray = []
     yArray = []
     matching = []
-    for i in range ( 1, round(x/8) ):
+    for i in range ( 1, round(x/8)):
         if x % i == 0:
             xArray.append(i)
-    print (xArray)
-    for j in range ( 1, round(y/8) ):
+
+    for j in range ( 1, round(y/8)):
         if y % j == 0:
             yArray.append(j)
-    print (yArray)
-    #if ( len(xArray) != 0 & len(yArray) != 0 ):
 
     matching = list(set(xArray) & set(yArray))
 
-    print ("matching before quicksort: %s" % matching)
-    print (len(matching))
     length = len(matching)
-    #matching = quicksort(matching,0,length - 1) #""" Quicksort returns NONE
-    print ("matching after quicksort: %s" % matching)
+    quicksort(matching,0,length - 1)
 
     return matching
 
 ########################################################################################################################
 #""" Main """
-
-
 
 name = easygui.fileopenbox() #""" ask to the user the name of the image """
 imageType = KnowFormatImage(name)
@@ -156,9 +150,16 @@ img, imbnw = OpenImage(name)
 msg = "Choose a density?"
 title = "Density/Font Sizing"
 matching = getDivisors(img)
+length = len(matching)
 
+#""" The choices is going to be based on the size of the list from
+#  the divisors if the number repeats it is going to show just one time """
+choices = [matching[1], matching[round(length/8)], matching[round(length/6)], matching[round(length/4)], matching[round(length/2)]]
 
-choices = [matching[0],matching[1],matching[2],matching[3],]
+#""" there is no way to specify a custom order. The reason is that the data must be sorted in order
+#   for the "jump to" feature (namely, to jump down in the list by pressing keyboard keys) to work.
+#   https://media.readthedocs.org/pdf/easygui/master/easygui.pdf """
+
 choice = easygui.choicebox(msg, title, choices)
 size = int(choice)
 
